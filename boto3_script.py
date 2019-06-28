@@ -2,7 +2,7 @@ import boto3
 import botocore
 import click
 
-session = boto3.Session(profile_name='shotty')
+session = boto3.Session(profile_name='project_snap')
 ec2=session.resource('ec2')
 
 def filter_instances(project):
