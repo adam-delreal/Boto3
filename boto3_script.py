@@ -208,6 +208,39 @@ def list_bucket_objects(bucket):
     for x in s3.Bucket(bucket).objects.all()
         print(x)
 
+@cli.command('setup-bucket')
+@click.argument('bucket')
+def setup_bucket(bucket):
+    """
+    Create and Configures an S3 Bucket.
+    """
+    try:
+        s3_bucket = s3.create_bucket(
+            Bucket=bucket,
+            CreateBucketConfiguration={'LocationConstraints':session.region_name}
+            )
+    except except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == 'BucketAlreadyCreated':
+            s3_bucket = s3.Bucket(bucket)
+        else:
+            raise e
+
+    # policy = """{
+    # "Version": ,
+    # 'Statement': [{,
+    # 'Sid': ,
+    # 'Effect': ,
+    # 'Principle' : ,
+    #     'Action' : ,
+    #     'Resources' : ,}]
+    # }
+    # """
+    # % s3_bucket.name
+    # policy = policy.strip()
+    #
+    # pol = s3_bucket.Policy()
+    # pol.put(Policy=policy)
+
 
 
 if __name__ == '__main__':
