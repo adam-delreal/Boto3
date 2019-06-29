@@ -2,34 +2,51 @@ import boto3
 import botocore
 import click
 
-session = boto3.Session(profile_name='project_snap')
+# Establishing Session
+prof_name = 'python_automation'
+session = boto3.Session(profile_name=prof_name)
+# Establishing Resources: EC2 & S3
 ec2=session.resource('ec2')
+s3=session.resource('s3')
+
 
 def filter_instances(project):
-  instances = []
-  if project:
-    filters = [{'Name':'tag:Project', 'Values':[project]}]
-    instances=ec2.instances.filter(Filters=filters)
-  else:
-    instances=ec2.instances.all()
-  return instances
+    """
+    Filters EC2 instances according to project name.
+    """
+    instances = []
+    if project:
+        filters = [{'Name':'tag:Project', 'Values':[project]}]
+        instances=ec2.instances.filter(Filters=filters)
+    else:
+        instances=ec2.instances.all()
+    return instances
 
 def has_pending_snapshot(volume):
-	snapshot=list(volume.snapshot.all())
+    """
+    States whether a snapshot is pending.
+    """
+    snapshot=list(volume.snapshot.all())
 	return snapshot and snapshot[0].state == 'pending'
 
 
 @click.group()
 def cli():
-	"""Project Repo manages snapshots"""
+    """
+    Project repo which manages snapshots.
+    """
 
 @cli.group('volumes')
 def volumes():
-  """Commands for volumes"""
+    """
+    Commands used for volumes.
+    """
 
 @cli.group('instances')
 def instances():
-  """Commands for instances"""
+    """
+    Commands used for instances.
+    """
 
 
 
@@ -39,7 +56,9 @@ def instances():
 @click.option('--all', 'list_all', default=False, is_flag=True,
 						 help='List all snapshots for each volume, not the most recent')
 def list_snapshots(project, list_all):
-  "list EC2 Snapshots"
+  """
+  Lists EC2 Snapshots
+  """
   instances=filter_instances(project)
 	for i in instances:
 		for v in i.volumes.all():
@@ -62,7 +81,9 @@ def list_snapshots(project, list_all):
 @click.option('--project', default=None,
   help='Only volumes for project (tag project:<name>)')
 def list_volumes(project):
-  "list EC2 volumes"
+  """
+  Lists EC2 Volumes
+  """
   instances=filter_instances(project)
 	for i in instances:
 		for v in i.volumes.all():
@@ -81,7 +102,9 @@ def list_volumes(project):
 @click.option('--project', default=None,
 						 help='Only instances forproject (tag project: <name>)')
 def create_snapshot(project):
-	"""Create snapshots for EC2 instances"""
+	"""
+    Creates Snapshots for EC2 instances
+    """
 	for i in instances:
 		print("Stopping {0}...".format(i.id))
 		i.stop()
@@ -104,7 +127,9 @@ def create_snapshot(project):
 @click.option('--project', default=None,
   help='Only instance for project (tag project:<name>)')
 def list_instances(project):
-  "list EC2 instances"
+  """
+  Lists EC2 instances
+  """
   instances=filter_instances(project)
 
   for i in instances:
@@ -126,7 +151,9 @@ def list_instances(project):
 @click.option('--project', default=None,
   help='Only instances for the project')
 def stop_instances(project):
-  """Stop EC2 Instances"""
+  """
+  Stops EC2 Instances
+  """
   instances=filter_instances(project)
 
   for i in instances:
@@ -143,7 +170,9 @@ def stop_instances(project):
 @click.option('--project', default=None,
   help='Only instances for the project')
 def start_instances(project):
-  """Start EC2 Instances"""
+  """
+  Starts EC2 Instances
+  """
   instances=filter_instances(project)
 
   for i in instances:
