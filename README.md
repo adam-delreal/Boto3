@@ -1,5 +1,6 @@
 # Boto3 v1 (WIP)
 
-- Boto3 Script to automate AWS.
+- Automate AWS using the CLI with a custom python script leveraging Boto3.
 
-Work in progress will add more functionality.
+Work in Progress.
+Will add more functionality.
