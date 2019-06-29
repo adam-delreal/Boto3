@@ -9,6 +9,29 @@ session = boto3.Session(profile_name=prof_name)
 ec2=session.resource('ec2')
 s3=session.resource('s3')
 
+# Leverage click to work within the CLI
+@click.group()
+def cli():
+    """
+    Project which manages aws.
+    """
+    pass
+# Adding command: "volume"
+@cli.group('volumes')
+def volumes():
+    """
+    Commands used for volumes.
+    """
+    pass
+# Adding command: "instances"
+@cli.group('instances')
+def instances():
+    """
+    Commands used for instances.
+    """
+    pass
+
+###################### EC2 ######################
 
 def filter_instances(project):
     """
@@ -22,32 +45,13 @@ def filter_instances(project):
         instances=ec2.instances.all()
     return instances
 
+
 def has_pending_snapshot(volume):
     """
     States whether a snapshot is pending.
     """
     snapshot=list(volume.snapshot.all())
 	return snapshot and snapshot[0].state == 'pending'
-
-
-@click.group()
-def cli():
-    """
-    Project repo which manages snapshots.
-    """
-
-@cli.group('volumes')
-def volumes():
-    """
-    Commands used for volumes.
-    """
-
-@cli.group('instances')
-def instances():
-    """
-    Commands used for instances.
-    """
-
 
 
 @snapshots.command('list')
@@ -183,6 +187,27 @@ def start_instances(project):
 			print("Cloud could not start {0}. ".format(i.id) + str(e))
 			continue
 	return
+
+########################## S3 #############################
+@cli.command('list-buckets')
+def list_buckets():
+    """
+    Lists all S3 Buckets.
+    """
+    for x in s3.buckets.all()
+        print(x)
+
+
+
+@cli.command('list-bucket-objects')
+@click.argument('bucket')
+def list_bucket_objects(bucket):
+    """
+    Lists objects within an S3 Bucket.
+    """
+    for x in s3.Bucket(bucket).objects.all()
+        print(x)
+
 
 
 if __name__ == '__main__':
