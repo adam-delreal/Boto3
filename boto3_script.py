@@ -1,7 +1,4 @@
-import boto3
-import botocore
-import click
-
+import boto3, botocore, click
 # Establishing Session
 prof_name = 'python_automation'
 session = boto3.Session(profile_name=prof_name)
@@ -16,6 +13,8 @@ def cli():
     Project which manages aws.
     """
     pass
+
+
 # Adding command: "volume"
 @cli.group('volumes')
 def volumes():
@@ -23,6 +22,8 @@ def volumes():
     Commands used for volumes.
     """
     pass
+
+
 # Adding command: "instances"
 @cli.group('instances')
 def instances():
@@ -32,7 +33,6 @@ def instances():
     pass
 
 ###################### EC2 ######################
-
 def filter_instances(project):
     """
     Filters EC2 instances according to project name.
@@ -52,6 +52,7 @@ def has_pending_snapshot(volume):
     """
     snapshot=list(volume.snapshot.all())
     return snapshot and snapshot[0].state == 'pending'
+
 
 @snapshots.command('list')
 @click.option('--project',
@@ -80,6 +81,7 @@ def list_snapshots(project, list_all):
                 if s.state == 'completed' and not list_all: break
     return
 
+
 @volumes.command('list')
 @click.option('--project',
               default=None,
@@ -100,6 +102,7 @@ def list_volumes(project):
             )))
     return
 
+
 @instances.command('snapshot',
                    help='Create snapshots of all volumes')
 @click.option('--project',
@@ -110,20 +113,21 @@ def create_snapshot(project):
     Creates Snapshots for EC2 instances
     """
     for i in instances:
-        print("Stopping {0}...".format(i.id))
+        print(f"Stopping {i.id}...")
         i.stop()
         i.wait_until_stopped()
         for v in i.volumes.all():
             if has_pending_snapshot(v):
-                print(' Skipping {0}, snapshot already in progress'.format(v.id))
+                print(f' Skipping {v.id}, snapshot already in progress')
                 continue
-            print('Creating snapshot of {0}'.format(v.id))
+            print('Creating snapshot of {v.id}')
             v.create_snapshot(Description='Created by snapshot function.')
-        print("Starting {0}...".format(i.id))
+        print(f"Starting {i.id}...")
         i.start()
         i.wait_until_running()
     print("Jobs are done!")
     return
+
 
 @instances.command('list')
 @click.option('--project',
@@ -144,7 +148,6 @@ def list_instances(project):
         i.public_dns_name,
         tags.get('Project', '<no project>')
         )))
-
     return
 
 @instances.command('stop')
@@ -157,13 +160,14 @@ def stop_instances(project):
     """
     instances=filter_instances(project)
     for i in instances:
-        print("Stopping {0}...".format(i.id))
+        print(f"Stopping {i.id}...")
         try:
             i.stop()
         except botocore.exceptions.ClientError as e:
-            print("Cloud could not stop {0}. ".format(i.id) + str(e))
+            print(f"Cloud could not stop {i.id}. " + str(e))
             continue
     return
+
 
 @instances.command('start')
 @click.option('--project', default=None,
@@ -174,14 +178,14 @@ def start_instances(project):
     """
     instances=filter_instances(project)
     for i in instances:
-        print("Starting {0}...".format(i.id))
+        print(f"Starting {i.id}...")
         try:
             i.start()
         except botocore.exceptions.ClientError as e:
-            print("Cloud could not start {0}. ".format(i.id) + str(e))
+            print(f"Cloud could not start {i.id}. " + str(e))
             continue
-
     return
+
 
 ########################## S3 #############################
 @cli.command('list-buckets')
@@ -189,8 +193,7 @@ def list_buckets():
     """
     Lists all S3 Buckets.
     """
-    for x in s3.buckets.all():
-        print(x)
+    return [bucket for bucket in s3.buckets.all()]
 
 
 @cli.command('list-bucket-objects')
@@ -199,8 +202,7 @@ def list_bucket_objects(bucket):
     """
     Lists objects within an S3 Bucket.
     """
-    for x in s3.Bucket(bucket).objects.all():
-        print(x)
+    return [obj for obj in s3.Bucket(bucket).objects.all()]
 
 
 ###### CURRENTLY WORKING ON:
