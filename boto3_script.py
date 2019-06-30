@@ -45,13 +45,13 @@ def filter_instances(project):
         instances=ec2.instances.all()
     return instances
 
+
 def has_pending_snapshot(volume):
     """
     States whether a snapshot is pending.
     """
     snapshot=list(volume.snapshot.all())
     return snapshot and snapshot[0].state == 'pending'
-
 
 @snapshots.command('list')
 @click.option('--project',
@@ -80,7 +80,6 @@ def list_snapshots(project, list_all):
                 if s.state == 'completed' and not list_all: break
     return
 
-
 @volumes.command('list')
 @click.option('--project',
               default=None,
@@ -100,7 +99,6 @@ def list_volumes(project):
                 v.encrypted and "Encrypted" or "Not Encrypted"
             )))
     return
-
 
 @instances.command('snapshot',
                    help='Create snapshots of all volumes')
@@ -127,7 +125,6 @@ def create_snapshot(project):
     print("Jobs are done!")
     return
 
-
 @instances.command('list')
 @click.option('--project',
               default=None,
@@ -147,8 +144,8 @@ def list_instances(project):
         i.public_dns_name,
         tags.get('Project', '<no project>')
         )))
-    return
 
+    return
 
 @instances.command('stop')
 @click.option('--project',
@@ -163,11 +160,10 @@ def stop_instances(project):
         print("Stopping {0}...".format(i.id))
         try:
             i.stop()
-            except botocore.exceptions.ClientError as e:
-                print("Cloud could not stop {0}. ".format(i.id) + str(e))
-                continue
+        except botocore.exceptions.ClientError as e:
+            print("Cloud could not stop {0}. ".format(i.id) + str(e))
+            continue
     return
-
 
 @instances.command('start')
 @click.option('--project', default=None,
@@ -184,6 +180,7 @@ def start_instances(project):
         except botocore.exceptions.ClientError as e:
             print("Cloud could not start {0}. ".format(i.id) + str(e))
             continue
+
     return
 
 ########################## S3 #############################
@@ -192,7 +189,7 @@ def list_buckets():
     """
     Lists all S3 Buckets.
     """
-    for x in s3.buckets.all()
+    for x in s3.buckets.all():
         print(x)
 
 
@@ -202,10 +199,11 @@ def list_bucket_objects(bucket):
     """
     Lists objects within an S3 Bucket.
     """
-    for x in s3.Bucket(bucket).objects.all()
+    for x in s3.Bucket(bucket).objects.all():
         print(x)
 
 
+###### CURRENTLY WORKING ON:
 @cli.command('setup-bucket')
 @click.argument('bucket')
 def setup_bucket(bucket):
@@ -217,7 +215,7 @@ def setup_bucket(bucket):
             Bucket=bucket,
             CreateBucketConfiguration={'LocationConstraints':session.region_name}
             )
-    except except botocore.exceptions.ClientError as e:
+    except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == 'BucketAlreadyCreated':
             s3_bucket = s3.Bucket(bucket)
         else:
