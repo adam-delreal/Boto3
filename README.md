@@ -1,6 +1,5 @@
-# Boto3 v1 (WIP)
+# Boto3
 
-- Automate AWS using the CLI with a custom python script leveraging Boto3.
-
-Work in Progress.
-Will add more functionality.
+**Python script leveraging Boto3 to Automate AWS through the CLI.**
+- Deploys, configures, lists, and creates snapshots of EC2 Instances & S3 Buckets.
+- Work in Progress. Currently adding more functionality for S3.
