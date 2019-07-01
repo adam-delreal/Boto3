@@ -1,7 +1,9 @@
 import boto3, botocore, click
+
 # Establishing Session
 prof_name = 'python_automation'
 session = boto3.Session(profile_name=prof_name)
+
 # Establishing Resources: EC2 & S3
 ec2=session.resource('ec2')
 s3=session.resource('s3')
