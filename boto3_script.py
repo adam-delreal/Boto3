@@ -225,23 +225,6 @@ def setup_bucket(bucket):
         else:
             raise e
 
-    # policy = """{
-    # "Version": ,
-    # 'Statement': [{,
-    # 'Sid': ,
-    # 'Effect': ,
-    # 'Principle' : ,
-    #     'Action' : ,
-    #     'Resources' : ,}]
-    # }
-    # """
-    # % s3_bucket.name
-    # policy = policy.strip()
-    #
-    # pol = s3_bucket.Policy()
-    # pol.put(Policy=policy)
-
-
 
 if __name__ == '__main__':
     cli()
